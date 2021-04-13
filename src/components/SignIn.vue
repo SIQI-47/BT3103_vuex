@@ -16,27 +16,29 @@
 </template>
 
 <script>
-import firebase from '@firebase/app';
-require('firebase/auth');
+import {mapGetters, mapActions} from "vuex";
+
 export default {
   data() {
     return {
       email: "",
       password: "",
-    }
+    };
+  },
+  computed: {
+    ...mapGetters(["isUserAuth", "getUser"])
   },
   methods:{
-    signIn: function(){
-      firebase.auth().signInWithEmailAndPassword(this.email, this.password).then((user) =>{
-          console.log(user);
-          var currUser = user.user;
-          alert("You are now successfully logged in as " + currUser.email);
-          this.$router.push({path: "/profile"})
-          this.$parent.forceRerender();
+    ...mapActions(["signInAction"]),
+    signIn() {
+      this.signInAction({ email: this.email, password: this.password }).then(()=>{
+        if(this.isUserAuth) {
+          this.$router.push({ name: "profile"});
+        }
       })
     }
   },
-}
+};
 </script>
 
 <style scoped>

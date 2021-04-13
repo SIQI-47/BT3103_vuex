@@ -27,9 +27,7 @@
 </template>
 
 <script>
-import database from '../firebase.js';
-import firebase from '@firebase/app';
-require('firebase/auth');
+import { mapActions } from "vuex";
 export default {
   data() {
     return {
@@ -43,9 +41,12 @@ export default {
       expiry: "",
     }
   },
+  computed: {
+    ...mapActions(["signUpAction", "signOutAction"]),
+  },
   methods:{
-    signUp: function(){
-      const new_user = {
+    signUp() {
+      this.signUpAction({
         email: this.email,
         name: this.name,
         mobile: this.phone,
@@ -59,16 +60,14 @@ export default {
         moneySave: 0, 
         start: "singapore", 
         end: "singapore" 
-      }
-      firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then(cred =>{
-        database.collection("users")
-                .doc(cred.user.uid)
-                .set(Object.assign({}, new_user));
-      }).then(() => {
-        this.$router.push({path: "/profile"});
-        this.$parent.forceRerender();
+      }).then(()=> {
+        if(this.isUserAuth) {
+          this.signOutAction()
+          this.$router.replace({ name: "login"});
+          alert("Sign up successfully as "+ this.email);
+        }
       })
-    }
+    },
   }
 }
 </script>

@@ -25,6 +25,7 @@
 <script>
 import firebase from "@firebase/app";
 require('firebase/auth');
+import { mapActions } from "vuex";
 
 export default {
     data(){
@@ -34,11 +35,10 @@ export default {
         }
     },
     methods: {
+      ...mapActions(["signOutAction"]),
         logOut: function() {
-            firebase.auth().signOut().then(() => {
-                this.$router.push('/login');
-                this.$parent.forceRerender();
-            })
+            this.signOutAction();
+            this.$router.push("/login")
         },
         loginCheck: function() {
           if(firebase.auth().currentUser){
